@@ -1,0 +1,5 @@
+# Archives FDJ téléchargées par le script
+donnees/
+# Généré par `euromillions.py --export-json` (en CI pour le site en ligne)
+site/data/
+__pycache__/

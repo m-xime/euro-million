@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Grilles EuroMillions</title>
+  <meta name="description" content="Les statistiques de tous les tirages EuroMillions depuis 2004 et des grilles tirées au hasard selon vos réglages. Aucune méthode ne change vos chances de gagner.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/sofia-sans-condensed-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/sofia-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <header class="entete">
+    <h1>Grilles EuroMillions</h1>
+    <p class="chapeau">Les statistiques de tous les tirages depuis 2004, et des grilles tirées au hasard selon vos réglages. Aucune méthode ne change vos chances de gagner&#8239;: elle change seulement les numéros que vous cochez.</p>
+    <p class="dernier" id="dernier" hidden></p>
+  </header>
+
+  <main>
+    <p class="erreur" id="erreur" role="alert" hidden></p>
+
+    <section class="atelier" id="atelier" aria-label="Bulletin et réglages" hidden>
+      <div class="colonne-bulletin">
+        <fieldset class="vues">
+          <legend>Colorer le bulletin selon</legend>
+          <div class="segments">
+            <label><input type="radio" name="vue" value="ecart" checked><span>Écart à la moyenne</span></label>
+            <label><input type="radio" name="vue" value="retard"><span>Retard</span></label>
+            <label><input type="radio" name="vue" value="poids"><span>Poids de vos réglages</span></label>
+            <label><input type="radio" name="vue" value="aucune"><span>Aucune couleur</span></label>
+          </div>
+        </fieldset>
+
+        <div class="bulletin" id="bulletin">
+          <p class="imprime" id="titre-boules">5 numéros</p>
+          <div class="plateau" id="plateau-boules" role="grid" aria-labelledby="titre-boules" aria-describedby="legende-texte"></div>
+          <p class="imprime" id="titre-etoiles">2 étoiles</p>
+          <div class="plateau plateau-etoiles" id="plateau-etoiles" role="grid" aria-labelledby="titre-etoiles" aria-describedby="legende-texte"></div>
+          <div class="legende" id="legende">
+            <div class="legende-barre" id="legende-barre" aria-hidden="true"></div>
+            <div class="legende-graduations" id="legende-graduations" aria-hidden="true"></div>
+            <p class="legende-texte" id="legende-texte"></p>
+          </div>
+          <div class="infobulle" id="infobulle" aria-hidden="true" hidden></div>
+        </div>
+
+        <ol class="grilles" id="grilles" aria-label="Grilles tirées"></ol>
+      </div>
+
+      <form class="reglages" id="reglages" autocomplete="off">
+        <fieldset class="strategies">
+          <legend>Stratégie</legend>
+          <label class="choix"><input type="radio" name="strategie" value="equilibre" checked><span><strong>Équilibre</strong><span class="aide">Un peu de tout&#8239;: fréquence, récence et retard.</span></span></label>
+          <label class="choix"><input type="radio" name="strategie" value="chauds"><span><strong>Chauds</strong><span class="aide">Favorise les numéros souvent sortis, en général et récemment.</span></span></label>
+          <label class="choix"><input type="radio" name="strategie" value="froids"><span><strong>Froids</strong><span class="aide">Favorise les numéros peu sortis ou en retard.</span></span></label>
+          <label class="choix"><input type="radio" name="strategie" value="aleatoire"><span><strong>Aléatoire</strong><span class="aide">Aucune pondération, tirage uniforme.</span></span></label>
+          <label class="choix"><input type="radio" name="strategie" value="personnalisee"><span><strong>Personnalisée</strong><span class="aide">Vos propres coefficients, dans les réglages fins.</span></span></label>
+        </fieldset>
+
+        <details class="fins">
+          <summary>Réglages fins</summary>
+          <p class="aide">Un coefficient positif favorise, négatif défavorise, zéro ignore le critère.</p>
+          <div class="curseur">
+            <label for="poids-frequence">Fréquence sur tout l'historique</label>
+            <input type="range" id="poids-frequence" min="-1" max="1" step="0.1" value="0.3">
+            <output for="poids-frequence"></output>
+          </div>
+          <div class="curseur">
+            <label for="poids-recent">Fréquence récente</label>
+            <input type="range" id="poids-recent" min="-1" max="1" step="0.1" value="0.2">
+            <output for="poids-recent"></output>
+          </div>
+          <div class="curseur">
+            <label for="poids-retard">Retard</label>
+            <input type="range" id="poids-retard" min="-1" max="1" step="0.1" value="0.3">
+            <output for="poids-retard"></output>
+          </div>
+          <label class="champ">Tirages pris en compte pour la fréquence récente
+            <input type="number" id="fenetre" min="1" step="1" value="50" required>
+          </label>
+        </details>
+
+        <div class="anti">
+          <label class="case-a-cocher"><input type="checkbox" id="anti-populaire"> Éviter les grilles populaires</label>
+          <p class="aide">Écarte les dates, les suites et les motifs que beaucoup de joueurs cochent. Vous ne gagnez pas plus souvent, mais un gain serait moins souvent partagé.</p>
+          <label class="champ">Score de popularité maximal
+            <input type="number" id="seuil" min="0" max="10" step="1" value="1" disabled>
+          </label>
+        </div>
+
+        <div class="ligne-champs">
+          <label class="champ">Nombre de grilles
+            <input type="number" id="nb-grilles" min="1" max="10" step="1" value="1" required>
+          </label>
+          <label class="champ">Graine
+            <input type="text" id="graine" placeholder="au hasard" autocomplete="off" spellcheck="false" aria-describedby="aide-graine">
+          </label>
+        </div>
+        <p class="aide" id="aide-graine">Avec la même graine et les mêmes réglages, vous retrouvez les mêmes grilles.</p>
+
+        <button type="submit" class="tirer" id="tirer">Tirer une grille</button>
+
+        <p class="visuellement-cache" id="annonce" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="chiffres" id="chiffres" aria-labelledby="titre-chiffres" hidden>
+      <h2 id="titre-chiffres">Ce que disent les chiffres</h2>
+      <p class="resume" id="resume"></p>
+      <div class="palmares">
+        <div>
+          <h3>Numéros</h3>
+          <dl id="palmares-boules"></dl>
+        </div>
+        <div>
+          <h3>Étoiles</h3>
+          <dl id="palmares-etoiles"></dl>
+          <p class="aide">Comptées depuis le 27 septembre 2016, date du passage à 12 étoiles.</p>
+        </div>
+      </div>
+      <details class="tableaux">
+        <summary>Voir toutes les valeurs</summary>
+        <div class="defile"><table id="table-boules"></table></div>
+        <div class="defile"><table id="table-etoiles"></table></div>
+      </details>
+      <button type="button" class="secondaire" id="csv">Télécharger les statistiques (CSV)</button>
+    </section>
+
+    <section class="lucidite" aria-labelledby="titre-lucidite">
+      <h2 id="titre-lucidite">À garder en tête</h2>
+      <p>Chaque tirage est indépendant. Une boule n'a pas de mémoire&#8239;: un numéro en retard n'a pas plus de chances de sortir, et un numéro souvent sorti non plus. Quelle que soit la grille, la probabilité de trouver les 5 numéros et les 2 étoiles est de 1 sur 139&#8239;838&#8239;160.</p>
+      <p>Le seul réglage utile est «&#8239;Éviter les grilles populaires&#8239;». Il ne fait pas gagner plus souvent, mais si vous gagnez, vous avez moins de chances de partager le gain avec d'autres joueurs qui ont coché la même grille.</p>
+      <p class="aide-jeu">Jouer comporte des risques&#8239;: endettement, dépendance. Appelez le <a href="tel:+33974751313">09&#160;74&#160;75&#160;13&#160;13</a> (appel non surtaxé).</p>
+    </section>
+  </main>
+
+  <footer class="pied">
+    <p id="source">Données&#8239;: archives officielles des tirages publiées par la FDJ.</p>
+    <p><a href="https://github.com/m-xime/euro-million">Code source sur GitHub</a></p>
+    <p>Police Sofia Sans, sous licence SIL Open Font License.</p>
+  </footer>
+</body>
+</html>
