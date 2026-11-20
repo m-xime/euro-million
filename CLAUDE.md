@@ -9,7 +9,7 @@ EuroMillions draw statistics and weighted grid generator, in two forms that shar
 - `euromillions.py`: single-file, dependency-free Python CLI. Downloads the official FDJ draw history (2004 → today), prints stats, proposes grids.
 - `site/`: static web version (plain HTML/CSS/JS, no build step, no npm) published on GitHub Pages at https://m-xime.github.io/euro-million/. It does all computation in the browser from `site/data/tirages.json`, which the Python script generates.
 
-Code, identifiers, CLI flags, UI text and README are all **in French**. Keep new identifiers, messages and docs in French. The web UI addresses the user as "vous".
+Code, identifiers, CLI flags, UI text and README are all **in French**. Keep new identifiers, messages and docs in French. The web UI addresses the user as "vous". Exception: GitHub Actions job names are in English (`build`, `deploy`), at the user's request.
 
 ## Constraints
 
@@ -49,4 +49,4 @@ There are no tests, linter or build step. To check a Python change, run with `--
 
 ### Deployment (`.github/workflows/pages.yml`)
 
-On push to `main`, Wednesday and Saturday at 06:17 UTC (after Tuesday/Friday draws), and manually: runs `--export-json` on the runner, uploads `site/` as the Pages artifact, deploys. `site/data/` and `donnees/` are gitignored; the data is never committed. GitHub disables scheduled workflows after 60 days without repository activity.
+On push to `main`, Wednesday and Saturday at 06:17 UTC (after Tuesday/Friday draws), and manually. Job `build` runs `--export-json` on the runner and uploads `site/` as the Pages artifact; job `deploy` publishes it. `site/data/` and `donnees/` are gitignored; the data is never committed. GitHub disables scheduled workflows after 60 days without repository activity.

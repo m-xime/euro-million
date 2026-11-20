@@ -1,6 +1,9 @@
-# Script EuroMillions : historique, statistiques, grille pondérée
+# EuroMillions : historique, statistiques, grilles pondérées
 
-Un seul fichier, `euromillions.py`, sans dépendance (Python 3.8 ou plus récent).
+Deux versions qui font les mêmes calculs :
+
+- **le site** : https://m-xime.github.io/euro-million/ (rien à installer) ;
+- **le script** : un seul fichier, `euromillions.py`, sans dépendance (Python 3.8 ou plus récent).
 
 ## Lancer
 
@@ -33,25 +36,39 @@ python3 euromillions.py --hors-ligne
 | `--graine 42` | rend le résultat reproductible |
 | `--export stats.csv` | exporte les stats et le poids de chaque numéro et étoile (ouvrable dans Excel) |
 | `--sans-stats` | n'affiche que les grilles |
+| `--export-json fichier.json` | écrit l'historique pour le site web puis s'arrête (échoue si une archive FDJ manque) |
 
 Exemple : `python3 euromillions.py --grilles 3 --strategie froids --anti-populaire`
 
 ## Le site web
 
-Le dossier `site/` contient une version web (HTML + JavaScript, sans dépendance) avec les mêmes statistiques, les mêmes stratégies et le même mode anti-populaire. Elle est publiée sur GitHub Pages : https://m-xime.github.io/euro-million/
+En ligne sur https://m-xime.github.io/euro-million/
 
-Le navigateur ne fait aucun calcul côté serveur. Un workflow GitHub Actions (`.github/workflows/pages.yml`) lance le script avec `--export-json`, qui télécharge l'historique FDJ et écrit `site/data/tirages.json`, puis publie le dossier `site/`. Il tourne à chaque push sur `main`, le mercredi et le samedi matin (après les tirages du mardi et du vendredi), et à la demande depuis l'onglet Actions. Si une archive FDJ manque, le workflow échoue et le site en ligne reste tel quel.
+Le dossier `site/` contient la version web (HTML + JavaScript, sans dépendance) : mêmes statistiques, mêmes stratégies, même mode anti-populaire. Le bulletin se colore selon l'écart à la moyenne, le retard ou le poids donné par tes réglages, et les grilles tirées y sont entourées. Il n'y a pas de serveur : tout est calculé dans le navigateur, à partir de `site/data/tirages.json`. Avec la même graine, le site redonne les mêmes grilles, mais pas les mêmes que le script : les deux n'utilisent pas le même générateur aléatoire.
 
-Pour l'essayer en local :
+### Mise à jour automatique
+
+Le workflow GitHub Actions `.github/workflows/pages.yml` a deux jobs :
+
+- `build` lance `python3 euromillions.py --export-json site/data/tirages.json`, qui télécharge l'historique FDJ, puis prépare le dossier `site/` ;
+- `deploy` le publie sur GitHub Pages.
+
+Il tourne à chaque push sur `main`, le mercredi et le samedi à 6 h 17 UTC (après les tirages du mardi et du vendredi), et à la demande depuis l'onglet Actions (« Run workflow »). Si une archive FDJ manque, `build` échoue et le site en ligne reste tel quel. Les données ne sont jamais commitées (`site/data/` est dans `.gitignore`).
+
+GitHub suspend les workflows planifiés après 60 jours sans activité sur le dépôt : il suffit alors de le relancer depuis l'onglet Actions.
+
+### Lancer le site en local
 
 ```bash
 python3 euromillions.py --export-json site/data/tirages.json
 python3 -m http.server -d site
 ```
 
-puis ouvre http://localhost:8000.
+puis ouvre http://localhost:8000. Si le port 8000 est déjà pris, choisis-en un autre : `python3 -m http.server 8080 -d site`. Ouvrir `site/index.html` directement ne marche pas : le navigateur bloque le chargement des données depuis un fichier local.
 
-Mise en ligne (une seule fois) : le dépôt doit être public (GitHub Pages n'est pas disponible pour un dépôt privé avec un compte gratuit), puis dans Settings → Pages, choisir « GitHub Actions » comme source.
+### Configuration GitHub (déjà faite)
+
+Le dépôt doit être public (GitHub Pages n'est pas disponible pour un dépôt privé avec un compte gratuit) et, dans Settings → Pages, la source doit être « GitHub Actions ».
 
 ## Comment la pondération marche
 
