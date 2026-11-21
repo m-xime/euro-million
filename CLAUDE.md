@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 EuroMillions draw statistics and weighted grid generator, in two forms that share one data source:
 
 - `euromillions.py`: single-file, dependency-free Python CLI. Downloads the official FDJ draw history (2004 → today), prints stats, proposes grids.
-- `site/`: static web version (plain HTML/CSS/JS, no build step, no npm) published on GitHub Pages at https://m-xime.github.io/euro-million/. It does all computation in the browser from `site/data/tirages.json`, which the Python script generates.
+- `site/`: static web version (plain HTML/CSS/JS, no build step, no npm) published on GitHub Pages at https://mlazzje.github.io/euro-million/. It does all computation in the browser from `site/data/tirages.json`, which the Python script generates.
 
 Code, identifiers, CLI flags, UI text and README are all **in French**. Keep new identifiers, messages and docs in French. The web UI addresses the user as "vous". Exception: GitHub Actions job names are in English (`build`, `deploy`), at the user's request.
 

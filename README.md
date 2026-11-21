@@ -2,7 +2,7 @@
 
 Deux versions qui font les mêmes calculs :
 
-- **le site** : https://m-xime.github.io/euro-million/ (rien à installer) ;
+- **le site** : https://mlazzje.github.io/euro-million/ (rien à installer) ;
 - **le script** : un seul fichier, `euromillions.py`, sans dépendance (Python 3.8 ou plus récent).
 
 ## Lancer
@@ -42,7 +42,7 @@ Exemple : `python3 euromillions.py --grilles 3 --strategie froids --anti-populai
 
 ## Le site web
 
-En ligne sur https://m-xime.github.io/euro-million/
+En ligne sur https://mlazzje.github.io/euro-million/
 
 Le dossier `site/` contient la version web (HTML + JavaScript, sans dépendance) : mêmes statistiques, mêmes stratégies, même mode anti-populaire. Le bulletin se colore selon l'écart à la moyenne, le retard ou le poids donné par tes réglages, et les grilles tirées y sont entourées. Il n'y a pas de serveur : tout est calculé dans le navigateur, à partir de `site/data/tirages.json`. Avec la même graine, le site redonne les mêmes grilles, mais pas les mêmes que le script : les deux n'utilisent pas le même générateur aléatoire.
 
